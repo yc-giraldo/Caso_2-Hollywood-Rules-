@@ -156,3 +156,107 @@ ggplot2::ggsave(
   dpi = 300
 )
 file.exists("tabla_resultados_punto2.png")
+
+# ============================================================
+# PUNTO 3
+# Comparacion entre peliculas de comedia y otros generos
+# ============================================================
+
+# PUNTO 3a
+# Comparacion del Total U.S. Gross
+# Crear grupos: Comedy y Other
+Hollywood <- Hollywood |>
+  mutate(
+    Tipo_Genero = ifelse(Genre == "Comedy", "Comedy", "Other")
+  )
+
+# Verificar cuantas peliculas hay en cada grupo
+table(Hollywood$Tipo_Genero)
+Hollywood <- readxl::read_excel(
+  "Hollywood.xls",
+  sheet = "Exhibit 1"
+)
+dim(Hollywood)
+names(Hollywood)
+Hollywood <- Hollywood |>
+  dplyr::mutate(
+    Tipo_Genero = ifelse(Genre == "Comedy", "Comedy", "Other")
+  )
+
+table(Hollywood$Tipo_Genero)
+
+# Tabla descriptiva del punto 3a
+tabla_3a <- Hollywood |>
+  group_by(Tipo_Genero) |>
+  summarise(
+    n = sum(!is.na(`Total U.S. Gross`)),
+    Promedio_US_Gross = mean(`Total U.S. Gross`, na.rm = TRUE),
+    Desviacion_US_Gross = sd(`Total U.S. Gross`, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Convertir los resultados a millones de dolares
+tabla_3a_bonita <- tabla_3a |>
+  mutate(
+    Promedio_US_Gross = round(Promedio_US_Gross / 1000000, 2),
+    Desviacion_US_Gross = round(Desviacion_US_Gross / 1000000, 2)
+  )
+
+tabla_3a_bonita
+
+# Guardar tabla del punto 3a como imagen PNG
+
+library(gridExtra)
+library(grid)
+
+tabla_imagen_3a <- tabla_3a_bonita
+
+colnames(tabla_imagen_3a) <- c(
+  "Género",
+  "n",
+  "Promedio US Gross",
+  "Desviación estándar"
+)
+
+tema_3a <- ttheme_minimal(
+  base_size = 13,
+  core = list(
+    fg_params = list(col = "black"),
+    bg_params = list(
+      fill = c("#FFFFFF", "#E6E6E6"),
+      col = NA
+    )
+  ),
+  colhead = list(
+    fg_params = list(fontface = "bold", col = "black"),
+    bg_params = list(fill = "#BFBFBF", col = NA)
+  )
+)
+
+png(
+  filename = "tabla_resultados_punto3a.png",
+  width = 1200,
+  height = 350,
+  res = 150
+)
+
+grid.newpage()
+
+grid.table(
+  tabla_imagen_3a,
+  rows = NULL,
+  theme = tema_3a
+)
+
+dev.off()
+
+file.exists("tabla_resultados_punto3a.png")
+
+# Prueba t de Welch: comedias vs otros géneros
+
+prueba_3a <- t.test(
+  `Total U.S. Gross` ~ Tipo_Genero,
+  data = Hollywood
+)
+
+prueba_3a
