@@ -260,3 +260,92 @@ prueba_3a <- t.test(
 )
 
 prueba_3a
+
+# ============================================================
+# PUNTO 3b
+# Comparacion del ROI en Estados Unidos por genero
+# ============================================================
+
+# Verificar que la variable ROI_US exista
+names(Hollywood)
+
+# Calcular estadisticos descriptivos
+tabla_3b <- Hollywood |>
+  group_by(Tipo_Genero) |>
+  summarise(
+    n = sum(!is.na(ROI_US)),
+    Promedio_ROI = mean(ROI_US, na.rm = TRUE),
+    Desviacion_ROI = sd(ROI_US, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Redondear los resultados
+tabla_3b_bonita <- tabla_3b |>
+  mutate(
+    Promedio_ROI = round(Promedio_ROI, 2),
+    Desviacion_ROI = round(Desviacion_ROI, 2)
+  )
+
+tabla_3b_bonita
+
+# Prueba t de Welch: ROI de comedias vs otros generos
+
+prueba_3b <- t.test(
+  ROI_US ~ Tipo_Genero,
+  data = Hollywood
+)
+
+prueba_3b
+# Mostrar los resultados en porcentaje
+tabla_3b_bonita <- tabla_3b |>
+  mutate(
+    Promedio_ROI = round(Promedio_ROI * 100, 2),
+    Desviacion_ROI = round(Desviacion_ROI * 100, 2)
+  )
+
+tabla_3b_bonita
+# Guardar tabla del punto 3b como imagen PNG
+
+tabla_imagen_3b <- tabla_3b_bonita
+
+colnames(tabla_imagen_3b) <- c(
+  "Género",
+  "n",
+  "ROI promedio (%)",
+  "Desviación estándar (%)"
+)
+
+tema_3b <- gridExtra::ttheme_minimal(
+  base_size = 13,
+  core = list(
+    fg_params = list(col = "black"),
+    bg_params = list(
+      fill = c("#FFFFFF", "#E6E6E6"),
+      col = NA
+    )
+  ),
+  colhead = list(
+    fg_params = list(fontface = "bold", col = "black"),
+    bg_params = list(fill = "#BFBFBF", col = NA)
+  )
+)
+
+png(
+  filename = "tabla_resultados_punto3b.png",
+  width = 1250,
+  height = 350,
+  res = 150
+)
+
+grid::grid.newpage()
+
+gridExtra::grid.table(
+  tabla_imagen_3b,
+  rows = NULL,
+  theme = tema_3b
+)
+
+dev.off()
+
+file.exists("tabla_resultados_punto3b.png")
+prueba_3b
