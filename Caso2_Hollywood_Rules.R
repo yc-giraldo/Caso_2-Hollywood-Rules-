@@ -349,3 +349,145 @@ dev.off()
 
 file.exists("tabla_resultados_punto3b.png")
 prueba_3b
+
+# ============================================================
+# PUNTO 4
+# Comparacion de ingresos entre peliculas R-rated y otras
+# ============================================================
+
+# Crear grupos segun clasificacion MPAA
+Hollywood <- Hollywood |>
+  mutate(
+    Tipo_MPAA = ifelse(MPAA == "R", "R-rated", "Other")
+  )
+
+# Verificar cantidad de peliculas por grupo
+table(Hollywood$Tipo_MPAA)
+
+# Tabla descriptiva del punto 4
+tabla_4 <- Hollywood |>
+  group_by(Tipo_MPAA) |>
+  summarise(
+    n = sum(!is.na(`Total U.S. Gross`)),
+    Promedio_US_Gross = mean(`Total U.S. Gross`, na.rm = TRUE),
+    Desviacion_US_Gross = sd(`Total U.S. Gross`, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Convertir los ingresos a millones de dolares
+tabla_4_bonita <- tabla_4 |>
+  mutate(
+    Promedio_US_Gross = round(Promedio_US_Gross / 1000000, 2),
+    Desviacion_US_Gross = round(Desviacion_US_Gross / 1000000, 2)
+  )
+
+tabla_4_bonita
+
+# Prueba t de Welch: R-rated vs otras clasificaciones
+prueba_4 <- t.test(
+  `Total U.S. Gross` ~ Tipo_MPAA,
+  data = Hollywood
+)
+
+prueba_4
+
+# Tabla del punto 4 como imagen PNG
+
+tabla_imagen_4 <- tabla_4_bonita
+
+colnames(tabla_imagen_4) <- c(
+  "Clasificación",
+  "n",
+  "Promedio US Gross",
+  "Desviación estándar"
+)
+
+tema_4 <- gridExtra::ttheme_minimal(
+  base_size = 13,
+  core = list(
+    fg_params = list(col = "black"),
+    bg_params = list(
+      fill = c("#FFFFFF", "#E6E6E6"),
+      col = NA
+    )
+  ),
+  colhead = list(
+    fg_params = list(fontface = "bold", col = "black"),
+    bg_params = list(fill = "#BFBFBF", col = NA)
+  )
+)
+
+png(
+  filename = "tabla_resultados_punto4.png",
+  width = 1250,
+  height = 350,
+  res = 150
+)
+
+grid::grid.newpage()
+
+gridExtra::grid.table(
+  tabla_imagen_4,
+  rows = NULL,
+  theme = tema_4
+)
+
+dev.off()
+
+file.exists("tabla_resultados_punto4.png")
+
+# ============================================================
+# PUNTO 4 - BOXPLOT
+# Comparacion de ingresos por clasificacion MPAA
+# ============================================================
+
+library(ggplot2)
+
+grafica_4 <- ggplot(
+  Hollywood,
+  aes(
+    x = Tipo_MPAA,
+    y = `Total U.S. Gross` / 1000000,
+    fill = Tipo_MPAA
+  )
+) +
+  geom_boxplot(
+    width = 0.55,
+    alpha = 0.85,
+    outlier.size = 2
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Other" = "#B5DEE2",
+      "R-rated" = "#F2B6C6"
+    )
+  ) +
+  labs(
+    title = "Total U.S. Gross según clasificación",
+    subtitle = "Comparación entre películas R-rated y otras clasificaciones",
+    x = "Clasificación",
+    y = "Total U.S. Gross (millones USD)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    panel.grid.minor = element_blank()
+  )
+
+# Mostrar la grafica
+print(grafica_4)
+
+# Guardar como imagen PNG
+ggsave(
+  filename = "boxplot_punto4.png",
+  plot = grafica_4,
+  width = 8,
+  height = 5,
+  dpi = 300,
+  bg = "white"
+)
+
+# Verificar que se guardo
+file.exists("boxplot_punto4.png")
