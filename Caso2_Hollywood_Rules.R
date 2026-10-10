@@ -545,3 +545,33 @@ dev.off()
 # Si el Opening Gross representa el 25% del Total U.S. Gross, 
 # entonces: Total_US_Gross = 1/0.25 * Opening_Gross = 4 * Opening_Gross.
 # Por lo tanto, el coeficiente de la pendiente (slope) tendría que ser exactamente 4.0
+
+# PUNTO 7g
+# Proporción de la variación explicada (R-squared / Coeficiente de Determinación)
+r_squared_7g <- summary(modelo_7a)$r.squared
+r_squared_porcentaje <- round(r_squared_7g * 100, 2)
+
+#  tabla resumen 
+tabla_7g <- data.frame(
+  Métrica = c("R-squared (R²)", "Porcentaje de Variación Explicada"),
+  Valor = c(round(r_squared_7g, 4), sprintf("%.2f%%", r_squared_porcentaje))
+)
+
+# Guardar tabla
+png(
+  filename = "tabla_resultados_punto7g.png",
+  width = 1100,
+  height = 300,
+  res = 150
+)
+grid::grid.newpage()
+gridExtra::grid.table(
+  tabla_7g,
+  rows = NULL,
+  theme = tema_7a
+)
+dev.off()
+
+# Verificar que los archivos se hayan guardado correctamente
+file.exists("tabla_resultados_punto7a.png")
+file.exists("tabla_resultados_punto7g.png")
