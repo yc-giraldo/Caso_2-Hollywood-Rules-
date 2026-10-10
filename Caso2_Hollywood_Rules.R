@@ -491,3 +491,51 @@ ggsave(
 
 # Verificar que se guardo
 file.exists("boxplot_punto4.png")
+
+
+# ============================================================
+# PUNTO 7
+# Relación entre el Total U.S. Gross y el Opening Gross
+# ============================================================
+
+# PUNTO 7a
+# Regresión lineal simple prediciendo el Total U.S. Gross a partir del Opening Gross
+modelo_7a <- lm(`Total U.S. Gross` ~ `Opening Gross`, data = Hollywood)
+summary(modelo_7a)
+
+# Tabla resumen 
+coef_7a <- summary(modelo_7a)$coefficients
+tabla_7a <- data.frame(
+  Variable = c("Intercepto", "Opening Gross"),
+  Coeficiente = round(coef_7a[, 1], 4),
+  `Error Estándar` = round(coef_7a[, 2], 4),
+  `Estadístico t` = round(coef_7a[, 3], 4),
+  `p-value` = format.pval(coef_7a[, 4], digits = 4, eps = 0.0001)
+)
+
+# Guardar tabla 
+tema_7a <- gridExtra::ttheme_minimal(
+  base_size = 12,
+  core = list(
+    fg_params = list(col = "black"),
+    bg_params = list(fill = c("#FFFFFF", "#E6E6E6"), col = NA)
+  ),
+  colhead = list(
+    fg_params = list(fontface = "bold", col = "black"),
+    bg_params = list(fill = "#BFBFBF", col = NA)
+  )
+)
+
+png(
+  filename = "tabla_resultados_punto7a.png",
+  width = 1350,
+  height = 350,
+  res = 150
+)
+grid::grid.newpage()
+gridExtra::grid.table(
+  tabla_7a,
+  rows = NULL,
+  theme = tema_7a
+)
+dev.off()
