@@ -539,3 +539,9 @@ gridExtra::grid.table(
   theme = tema_7a
 )
 dev.off()
+
+# PUNTO 7b
+# Análisis del valor teórico de la pendiente bajo la sabiduría popular (25%)
+# Si el Opening Gross representa el 25% del Total U.S. Gross, 
+# entonces: Total_US_Gross = 1/0.25 * Opening_Gross = 4 * Opening_Gross.
+# Por lo tanto, el coeficiente de la pendiente (slope) tendría que ser exactamente 4.0
