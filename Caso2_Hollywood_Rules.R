@@ -572,6 +572,12 @@ gridExtra::grid.table(
 )
 dev.off()
 
-# Verificar que los archivos se hayan guardado correctamente
-file.exists("tabla_resultados_punto7a.png")
-file.exists("tabla_resultados_punto7g.png")
+# ============================================================
+# CONCLUSIÓN GENERAL DEL ANÁLISIS
+# ============================================================
+# El análisis confirma que el éxito financiero en Hollywood no es aleatorio: 
+# el ROI supera significativamente el promedio histórico del 12% y el fin de 
+# semana de apertura explica el 73.72% de la taquilla total en EE.UU. 
+# No obstante, la sabiduría popular del 25% difiere de la realidad empírica, 
+# demostrando que la taquilla total responde a una combinación compleja de factores 
+# más allá de una simple regla fija.
